@@ -4,9 +4,12 @@ Simple tool for managing users and PCs in an internet cafe.
 ## Tính năng (Features)
 - 🔐 Đăng nhập cho Admin và Khách hàng
 - 👥 Quản lý khách hàng (thêm, xem, nạp tiền)
-- 💻 Quản lý máy tính (xem trạng thái)
+- 💻 Quản lý máy tính (xem trạng thái theo thời gian thực)
 - 💰 Quản lý số dư tài khoản
 - 📊 Theo dõi giao dịch
+- ✅ Validation đầu vào
+- 🔒 Hỗ trợ mã hóa mật khẩu (SHA-256)
+- 🎨 Giao diện màu sắc trực quan
 
 ## Yêu cầu hệ thống (Requirements)
 - Java Development Kit (JDK) 17 trở lên
@@ -41,29 +44,39 @@ private static final String MYSQL_PASSWORD = "your_password"; // Thay đổi pas
 
 ### 3. Biên dịch và chạy ứng dụng
 
-**Cách 1: Sử dụng command line**
+**Cách 1: Sử dụng scripts (Khuyến nghị)**
+
+Linux/Mac:
 ```bash
 cd com
+./compile.sh    # Biên dịch
+./run.sh        # Chạy ứng dụng
+```
 
-# Biên dịch
+Windows:
+```bash
+cd com
+compile.bat    # Biên dịch
+run.bat        # Chạy ứng dụng
+```
+
+**Cách 2: Sử dụng command line thủ công**
+
+Linux/Mac:
+```bash
+cd com
 javac -cp "lib/mysql-connector-j-8.0.33.jar" -d out $(find src -name "*.java")
-
-# Chạy
 java -cp "out:lib/mysql-connector-j-8.0.33.jar" com.yourcompany.cyberhub.Main
 ```
 
-**Trên Windows:**
+Windows:
 ```bash
 cd com
-
-# Biên dịch
 javac -cp "lib\mysql-connector-j-8.0.33.jar" -d out src\com\yourcompany\cyberhub\**\*.java
-
-# Chạy
 java -cp "out;lib\mysql-connector-j-8.0.33.jar" com.yourcompany.cyberhub.Main
 ```
 
-**Cách 2: Sử dụng IntelliJ IDEA**
+**Cách 3: Sử dụng IntelliJ IDEA**
 1. Mở thư mục `com` như một project
 2. Thêm `lib/mysql-connector-j-8.0.33.jar` vào Project Libraries
    - File → Project Structure → Libraries → + → Java → Chọn file jar
@@ -112,12 +125,44 @@ CyberHub/
                 └── DatabaseConnector.java
 ```
 
+## Cải tiến mới (Recent Improvements)
+
+### Phiên bản hiện tại
+- ✅ **Input Validation**: Thêm validation cho tất cả các trường nhập liệu
+  - Username: 3-50 ký tự, chỉ chứa chữ cái, số và dấu gạch dưới
+  - Password: Tối thiểu 6 ký tự
+  - Họ tên: 2-100 ký tự
+  - Số tiền: Phải dương và không vượt quá 100 triệu
+  
+- ✅ **Password Hashing**: Thêm tiện ích mã hóa mật khẩu SHA-256
+  - Class `PasswordHasher` trong package `util`
+  - Sẵn sàng để tích hợp vào quá trình đăng nhập
+  
+- ✅ **Improved UI**: Giao diện cải thiện
+  - Nút làm mới cho cả tab máy tính và khách hàng
+  - Hiển thị trạng thái máy bằng tiếng Việt
+  - Màu sắc rõ ràng cho trạng thái máy tính
+  - Thông báo thành công/lỗi rõ ràng hơn
+  
+- ✅ **Better Error Handling**: Xử lý lỗi tốt hơn
+  - Try-catch cho các thao tác database
+  - Thông báo lỗi chi tiết cho người dùng
+  - Validation messages rõ ràng
+
 ## Lưu ý bảo mật (Security Notes)
-⚠️ **Cảnh báo**: Phiên bản hiện tại lưu mật khẩu dạng plain text trong database. Trong môi trường production, nên:
-- Sử dụng BCrypt hoặc SHA-256 để hash mật khẩu
-- Thêm validation đầu vào
-- Sử dụng prepared statements (đã có) để tránh SQL injection
-- Thêm session management và timeout
+⚠️ **Cảnh báo**: Phiên bản hiện tại lưu mật khẩu dạng plain text trong database. 
+
+**Để kích hoạt mã hóa mật khẩu**:
+1. Sử dụng class `PasswordHasher.hashPassword()` khi thêm user mới
+2. Sử dụng `PasswordHasher.verifyPassword()` khi đăng nhập
+3. Chạy script migration để hash tất cả mật khẩu hiện có
+
+**Các cải tiến bảo mật khác nên có**:
+- ✅ Prepared statements (đã có) để tránh SQL injection
+- ✅ Input validation (đã có)
+- ⚠️ Cần thêm session management và timeout
+- ⚠️ Cần thêm HTTPS trong production
+- ⚠️ Cần thêm audit logging
 
 ## Đóng góp (Contributing)
 Mọi đóng góp đều được hoan nghênh! Hãy tạo issue hoặc pull request.

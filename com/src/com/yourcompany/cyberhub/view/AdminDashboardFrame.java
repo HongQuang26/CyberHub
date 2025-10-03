@@ -4,6 +4,7 @@ import com.yourcompany.cyberhub.dao.ComputerDao;
 import com.yourcompany.cyberhub.dao.UserDao;
 import com.yourcompany.cyberhub.model.Computer;
 import com.yourcompany.cyberhub.model.Customer;
+import com.yourcompany.cyberhub.util.InputValidator;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -16,6 +17,7 @@ public class AdminDashboardFrame extends JFrame {
 
     private JTabbedPane tabbedPane;
     private JPanel computerPanel;
+    private JPanel computerGridPanel; // The actual grid that holds computer panels
     private JPanel customerPanel;
     private JPanel transactionPanel;
 
@@ -56,8 +58,23 @@ public class AdminDashboardFrame extends JFrame {
     }
 
     private void setupComputerPanel() {
-        computerPanel = new JPanel(new GridLayout(0, 5, 10, 10)); // 0 rows, 5 columns
-        computerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        computerPanel = new JPanel(new BorderLayout());
+        
+        // Button panel at the top
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton btnRefresh = new JButton("Làm mới");
+        buttonPanel.add(btnRefresh);
+        computerPanel.add(buttonPanel, BorderLayout.NORTH);
+        
+        // Computer grid panel
+        computerGridPanel = new JPanel(new GridLayout(0, 5, 10, 10)); // 0 rows, 5 columns
+        computerGridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        JScrollPane scrollPane = new JScrollPane(computerGridPanel);
+        computerPanel.add(scrollPane, BorderLayout.CENTER);
+        
+        // Add refresh action
+        btnRefresh.addActionListener(e -> refreshComputerStatus());
     }
 
     private void setupCustomerPanel() {
@@ -87,16 +104,31 @@ public class AdminDashboardFrame extends JFrame {
     }
 
     private void refreshComputerStatus() {
-        computerPanel.removeAll();
+        computerGridPanel.removeAll();
         List<Computer> computers = computerDao.getAllComputers();
         for (Computer computer : computers) {
             JPanel singleComputerPanel = new JPanel(new BorderLayout());
             singleComputerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            singleComputerPanel.setPreferredSize(new Dimension(120, 100));
 
             JLabel nameLabel = new JLabel(computer.getComputerName(), SwingConstants.CENTER);
             nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
-            JLabel statusLabel = new JLabel("Trạng thái: " + computer.getStatus(), SwingConstants.CENTER);
+            String statusText = "";
+            switch (computer.getStatus()) {
+                case "AVAILABLE":
+                    statusText = "Sẵn sàng";
+                    break;
+                case "IN_USE":
+                    statusText = "Đang dùng";
+                    break;
+                case "MAINTENANCE":
+                    statusText = "Bảo trì";
+                    break;
+                default:
+                    statusText = computer.getStatus();
+            }
+            JLabel statusLabel = new JLabel(statusText, SwingConstants.CENTER);
 
             singleComputerPanel.add(nameLabel, BorderLayout.CENTER);
             singleComputerPanel.add(statusLabel, BorderLayout.SOUTH);
@@ -105,18 +137,21 @@ public class AdminDashboardFrame extends JFrame {
             switch (computer.getStatus()) {
                 case "AVAILABLE":
                     singleComputerPanel.setBackground(new Color(144, 238, 144)); // Light Green
+                    statusLabel.setForeground(new Color(0, 100, 0)); // Dark Green
                     break;
                 case "IN_USE":
                     singleComputerPanel.setBackground(new Color(255, 182, 193)); // Light Red/Pink
+                    statusLabel.setForeground(new Color(139, 0, 0)); // Dark Red
                     break;
                 case "MAINTENANCE":
                     singleComputerPanel.setBackground(Color.LIGHT_GRAY);
+                    statusLabel.setForeground(Color.DARK_GRAY);
                     break;
             }
-            computerPanel.add(singleComputerPanel);
+            computerGridPanel.add(singleComputerPanel);
         }
-        computerPanel.revalidate();
-        computerPanel.repaint();
+        computerGridPanel.revalidate();
+        computerGridPanel.repaint();
     }
 
     private void refreshCustomerList() {
@@ -150,12 +185,21 @@ public class AdminDashboardFrame extends JFrame {
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
-            String username = usernameField.getText();
+            String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
-            String fullName = fullNameField.getText();
+            String fullName = fullNameField.getText().trim();
 
-            if (username.isEmpty() || password.isEmpty() || fullName.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            // Validate inputs
+            if (!InputValidator.isValidUsername(username)) {
+                JOptionPane.showMessageDialog(this, InputValidator.getUsernameErrorMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!InputValidator.isValidPassword(password)) {
+                JOptionPane.showMessageDialog(this, InputValidator.getPasswordErrorMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!InputValidator.isValidFullName(fullName)) {
+                JOptionPane.showMessageDialog(this, InputValidator.getFullNameErrorMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -184,9 +228,11 @@ public class AdminDashboardFrame extends JFrame {
 
         if (amountStr != null && !amountStr.trim().isEmpty()) {
             try {
-                BigDecimal amount = new BigDecimal(amountStr);
-                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                    JOptionPane.showMessageDialog(this, "Số tiền phải là số dương.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                BigDecimal amount = new BigDecimal(amountStr.trim());
+                
+                // Validate amount
+                if (!InputValidator.isValidAmount(amount)) {
+                    JOptionPane.showMessageDialog(this, InputValidator.getAmountErrorMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -194,7 +240,7 @@ public class AdminDashboardFrame extends JFrame {
                 boolean success = userDao.updateBalance(userId, newBalance);
 
                 if (success) {
-                    JOptionPane.showMessageDialog(this, "Nạp tiền thành công!");
+                    JOptionPane.showMessageDialog(this, "Nạp tiền thành công! Số tiền: " + amount + " VND", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                     refreshCustomerList(); // Cập nhật lại bảng
                     // TODO: Ghi lại giao dịch này vào bảng 'transactions'
                 } else {
