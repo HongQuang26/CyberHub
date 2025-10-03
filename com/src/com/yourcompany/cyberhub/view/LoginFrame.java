@@ -2,6 +2,7 @@ package com.yourcompany.cyberhub.view;
 
 import com.yourcompany.cyberhub.dao.UserDao;
 import com.yourcompany.cyberhub.model.User;
+import com.yourcompany.cyberhub.model.Customer;
 import com.yourcompany.cyberhub.util.InputValidator;
 
 import javax.swing.*;
@@ -70,8 +71,11 @@ public class LoginFrame extends JFrame {
                     new AdminDashboardFrame().setVisible(true);
                     dispose(); // Đóng cửa sổ đăng nhập
                 } else {
-                    JOptionPane.showMessageDialog(this, "Chức năng đăng nhập cho khách hàng chưa được hỗ trợ.", 
-                        "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công! Chào mừng " + user.getFullName(), 
+                        "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    // Mở màn hình dashboard của Khách hàng
+                    new CustomerDashboardFrame((Customer) user).setVisible(true);
+                    dispose(); // Đóng cửa sổ đăng nhập
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng.", 

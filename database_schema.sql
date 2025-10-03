@@ -46,6 +46,29 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+-- Table for food menu
+CREATE TABLE IF NOT EXISTS food_menu (
+    food_id INT PRIMARY KEY AUTO_INCREMENT,
+    food_name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    available BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table for food orders
+CREATE TABLE IF NOT EXISTS food_orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    food_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    total_price DECIMAL(10, 2) NOT NULL,
+    status ENUM('PENDING', 'DELIVERED', 'CANCELLED') DEFAULT 'PENDING',
+    order_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (food_id) REFERENCES food_menu(food_id)
+);
+
 -- Insert default admin account (username: admin, password: admin123)
 INSERT INTO users (username, password, full_name, role, balance) 
 VALUES ('admin', 'admin123', 'Administrator', 'ADMIN', 0.00)
@@ -73,3 +96,18 @@ VALUES
     ('PC-09', 'AVAILABLE'),
     ('PC-10', 'AVAILABLE')
 ON DUPLICATE KEY UPDATE computer_name=computer_name;
+
+-- Insert sample food menu items
+INSERT INTO food_menu (food_name, price, category, available) 
+VALUES 
+    ('Mì tôm', 10000.00, 'Đồ ăn nhanh', TRUE),
+    ('Xúc xích', 15000.00, 'Đồ ăn nhanh', TRUE),
+    ('Bánh mì', 20000.00, 'Đồ ăn nhanh', TRUE),
+    ('Cơm rang', 35000.00, 'Cơm', TRUE),
+    ('Coca Cola', 15000.00, 'Nước giải khát', TRUE),
+    ('Pepsi', 15000.00, 'Nước giải khát', TRUE),
+    ('Nước suối', 10000.00, 'Nước giải khát', TRUE),
+    ('Trà đào', 20000.00, 'Nước giải khát', TRUE),
+    ('Snack', 10000.00, 'Đồ ăn vặt', TRUE),
+    ('Kẹo', 5000.00, 'Đồ ăn vặt', TRUE)
+ON DUPLICATE KEY UPDATE food_name=food_name;
