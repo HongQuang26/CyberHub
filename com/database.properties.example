@@ -1,0 +1,13 @@
+# Database Configuration
+# Copy this file to database.properties and update with your settings
+
+# Database URL
+db.url=jdbc:mysql://localhost:3306/net_cafe_management
+
+# Database credentials
+db.username=root
+db.password=root
+
+# Connection pool settings (optional)
+# db.pool.maxConnections=10
+# db.pool.timeout=30000

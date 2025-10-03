@@ -1,7 +1,9 @@
-package com.yourcompany.netcafe.view;
+package com.yourcompany.cyberhub.view;
 
-import com.yourcompany.netcafe.dao.UserDao;
-import com.yourcompany.netcafe.model.User;
+import com.yourcompany.cyberhub.dao.UserDao;
+import com.yourcompany.cyberhub.model.User;
+import com.yourcompany.cyberhub.model.Customer;
+import com.yourcompany.cyberhub.util.InputValidator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,27 +45,46 @@ public class LoginFrame extends JFrame {
     }
 
     private void handleLogin() {
-        String username = usernameField.getText();
+        String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
 
+        // Basic validation
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        User user = userDao.login(username, password);
+        // Validate username format
+        if (!InputValidator.isValidUsername(username)) {
+            JOptionPane.showMessageDialog(this, InputValidator.getUsernameErrorMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        if (user != null) {
-            if ("ADMIN".equals(user.getRole())) {
-                JOptionPane.showMessageDialog(this, "Đăng nhập thành công với tư cách Admin!");
-                // Mở màn hình dashboard của Admin
-                new AdminDashboardFrame().setVisible(true);
-                dispose(); // Đóng cửa sổ đăng nhập
+        try {
+            User user = userDao.login(username, password);
+
+            if (user != null) {
+                if ("ADMIN".equals(user.getRole())) {
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công! Chào mừng " + user.getFullName(), 
+                        "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    // Mở màn hình dashboard của Admin
+                    new AdminDashboardFrame().setVisible(true);
+                    dispose(); // Đóng cửa sổ đăng nhập
+                } else {
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công! Chào mừng " + user.getFullName(), 
+                        "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    // Mở màn hình dashboard của Khách hàng
+                    new CustomerDashboardFrame((Customer) user).setVisible(true);
+                    dispose(); // Đóng cửa sổ đăng nhập
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Chức năng đăng nhập cho khách hàng chưa được hỗ trợ ở máy chủ.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng.", 
+                    "Lỗi Đăng nhập", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng.", "Lỗi Đăng nhập", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra lại cấu hình.", 
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 }

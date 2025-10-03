@@ -27,3 +27,13 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Build files ###
+sources.txt
+*.class
+
+### Dependencies ###
+lib/*.jar
+
+### Configuration ###
+database.properties

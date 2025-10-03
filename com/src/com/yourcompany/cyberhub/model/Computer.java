@@ -1,4 +1,4 @@
-package com.yourcompany.netcafe.model;
+package com.yourcompany.cyberhub.model;
 
 public class Computer {
     private int computerId;

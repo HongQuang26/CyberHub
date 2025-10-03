@@ -1,4 +1,4 @@
-package com.yourcompany.netcafe.model;
+package com.yourcompany.cyberhub.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

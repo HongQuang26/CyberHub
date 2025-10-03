@@ -1,7 +1,7 @@
-package com.yourcompany.netcafe.dao;
+package com.yourcompany.cyberhub.dao;
 
-import com.yourcompany.netcafe.model.Computer;
-import com.yourcompany.netcafe.util.DatabaseConnector;
+import com.yourcompany.cyberhub.model.Computer;
+import com.yourcompany.cyberhub.util.DatabaseConnector;
 
 import java.sql.*;
 import java.util.ArrayList;
