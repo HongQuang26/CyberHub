@@ -1,4 +1,4 @@
-package com.yourcompany.netcafe.model;
+package com.yourcompany.cyberhub.model;
 
 public class Admin extends User {
     public Admin(int userId, String username, String password, String fullName) {

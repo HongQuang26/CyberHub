@@ -1,7 +1,7 @@
-package com.yourcompany.netcafe.dao;
+package com.yourcompany.cyberhub.dao;
 
-import com.yourcompany.netcafe.model.Computer;
-import com.yourcompany.netcafe.util.DatabaseConnector;
+import com.yourcompany.cyberhub.model.Computer;
+import com.yourcompany.cyberhub.util.DatabaseConnector;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 public class ComputerDao {
     public List<Computer> getAllComputers() {
         List<Computer> computers = new ArrayList<>();
-        String sql = "SELECT * FROM computers ORDER BY computer_name";
+        String sql = "SELECT * FROM computers ORDER BY computer_id";
         try (Connection conn = DatabaseConnector.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -34,8 +34,19 @@ public class ComputerDao {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, status);
             pstmt.setInt(2, computerId);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean addComputer(String computerName) {
+        String sql = "INSERT INTO computers (computer_name, status) VALUES (?, 'AVAILABLE')";
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, computerName);
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

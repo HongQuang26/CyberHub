@@ -1,4 +1,4 @@
-package com.yourcompany.netcafe.model;
+package com.yourcompany.cyberhub.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 public class Transaction {
     private int transactionId;
     private int userId;
-    private String username; // Thêm để dễ hiển thị
+    private String username;
     private BigDecimal amount;
-    private String transactionType; // TOP_UP, PAYMENT
+    private String transactionType;
     private LocalDateTime transactionDate;
 
     public Transaction(int transactionId, int userId, String username, BigDecimal amount, String transactionType, LocalDateTime transactionDate) {
@@ -20,8 +20,8 @@ public class Transaction {
         this.transactionDate = transactionDate;
     }
 
-    // Getters and Setters
-    // ... (Thêm các getter setter cần thiết)
+    public int getTransactionId() { return transactionId; }
+    public int getUserId() { return userId; }
     public String getUsername() { return username; }
     public BigDecimal getAmount() { return amount; }
     public String getTransactionType() { return transactionType; }

@@ -1,6 +1,6 @@
-package com.yourcompany.netcafe;
+package com.yourcompany.cyberhub;
 
-import com.yourcompany.netcafe.view.LoginFrame;
+import com.yourcompany.cyberhub.view.LoginFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -11,6 +11,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         SwingUtilities.invokeLater(() -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);

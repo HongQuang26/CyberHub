@@ -1,9 +1,9 @@
-package com.yourcompany.netcafe.model;
+package com.yourcompany.cyberhub.model;
 
 public class Computer {
     private int computerId;
     private String computerName;
-    private String status; // AVAILABLE, IN_USE, MAINTENANCE
+    private String status;
 
     public Computer(int computerId, String computerName, String status) {
         this.computerId = computerId;
@@ -11,7 +11,6 @@ public class Computer {
         this.status = status;
     }
 
-    // Getters and Setters
     public int getComputerId() { return computerId; }
     public void setComputerId(int computerId) { this.computerId = computerId; }
     public String getComputerName() { return computerName; }

@@ -1,10 +1,10 @@
-package com.yourcompany.netcafe.view;
+package com.yourcompany.cyberhub.view;
 
-import com.yourcompany.netcafe.dao.UserDao;
-import com.yourcompany.netcafe.model.User;
+import com.yourcompany.cyberhub.dao.UserDao;
+import com.yourcompany.cyberhub.model.User;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -21,6 +21,7 @@ public class LoginFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(3, 2, 10, 10));
+        ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         add(new JLabel("Tên đăng nhập:"));
         usernameField = new JTextField();
@@ -31,15 +32,11 @@ public class LoginFrame extends JFrame {
         add(passwordField);
 
         loginButton = new JButton("Đăng nhập");
-        add(new JLabel()); // Placeholder
+        add(new JLabel());
         add(loginButton);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleLogin();
-            }
-        });
+        loginButton.addActionListener(e -> handleLogin());
+        getRootPane().setDefaultButton(loginButton);
     }
 
     private void handleLogin() {
@@ -55,10 +52,8 @@ public class LoginFrame extends JFrame {
 
         if (user != null) {
             if ("ADMIN".equals(user.getRole())) {
-                JOptionPane.showMessageDialog(this, "Đăng nhập thành công với tư cách Admin!");
-                // Mở màn hình dashboard của Admin
                 new AdminDashboardFrame().setVisible(true);
-                dispose(); // Đóng cửa sổ đăng nhập
+                dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Chức năng đăng nhập cho khách hàng chưa được hỗ trợ ở máy chủ.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             }

@@ -15,7 +15,6 @@ public class Customer extends User {
         setRole("CUSTOMER");
     }
 
-    // Getter and Setter for balance
     public BigDecimal getBalance() { return balance; }
     public void setBalance(BigDecimal balance) { this.balance = balance; }
 }

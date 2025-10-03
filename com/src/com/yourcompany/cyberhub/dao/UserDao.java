@@ -1,9 +1,9 @@
-package com.yourcompany.netcafe.dao;
+package com.yourcompany.cyberhub.dao;
 
-import com.yourcompany.netcafe.model.Admin;
-import com.yourcompany.netcafe.model.Customer;
-import com.yourcompany.netcafe.model.User;
-import com.yourcompany.netcafe.util.DatabaseConnector;
+import com.yourcompany.cyberhub.model.Admin;
+import com.yourcompany.cyberhub.model.Customer;
+import com.yourcompany.cyberhub.model.User;
+import com.yourcompany.cyberhub.util.DatabaseConnector;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
-
     public User login(String username, String password) {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (Connection conn = DatabaseConnector.getConnection();
@@ -68,8 +67,7 @@ public class UserDao {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setString(3, fullName);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -82,8 +80,7 @@ public class UserDao {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setBigDecimal(1, newBalance);
             pstmt.setInt(2, userId);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
