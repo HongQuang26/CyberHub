@@ -62,10 +62,18 @@ run.bat
 1. Chạy ứng dụng sẽ mở cửa sổ đăng nhập
 2. Nhập username: `admin`, password: `admin123`
 3. Nhấn "Đăng nhập"
-4. Bạn sẽ thấy dashboard với 3 tab:
+4. Bạn sẽ thấy dashboard với 4 tab:
    - **Quản lý Máy tính**: Xem trạng thái 10 máy mẫu
    - **Quản lý Khách hàng**: Thêm, xóa, nạp tiền cho khách hàng
+   - **Quản lý Thực đơn**: Quản lý menu đồ ăn
    - **Lịch sử & Thống kê**: Đang phát triển
+
+### Đăng nhập Khách hàng (MỚI)
+1. Đăng nhập với `customer1/pass123`
+2. Bạn sẽ thấy dashboard khách hàng với 3 tab:
+   - **Chọn máy tính**: Click vào máy có sẵn (màu xanh) để sử dụng
+   - **Đặt đồ ăn**: Chọn món, nhập số lượng, hệ thống tự động trừ tiền
+   - **Tài khoản**: Xem thông tin và số dư
 
 ## Các tính năng chính
 
@@ -82,8 +90,17 @@ run.bat
   - Password: Tối thiểu 6 ký tự
   - Họ tên: 2-100 ký tự
 - **Nạp tiền**: Chọn khách hàng, nhập số tiền (dương, tối đa 100 triệu)
+  - Số tiền tự động được định dạng với dấu chấm (ví dụ: 50.000)
 - **Xóa khách hàng**: Chọn khách hàng và xóa (có xác nhận)
 - **Làm mới**: Cập nhật danh sách khách hàng
+- Số dư hiển thị với định dạng có dấu chấm phân cách
+
+### Tab Quản lý Thực đơn (MỚI)
+- **Thêm món**: Nhập tên món, giá, danh mục
+  - Giá tự động được định dạng khi nhập
+- **Sửa món**: Chọn món để sửa thông tin hoặc đánh dấu có sẵn/không
+- **Xóa món**: Xóa món khỏi thực đơn (có xác nhận)
+- **Làm mới**: Cập nhật danh sách món ăn
 
 ## Khắc phục sự cố
 
@@ -112,6 +129,7 @@ FLUSH PRIVILEGES;
 
 ## Thử nghiệm nhanh
 
+### Thử nghiệm với Admin
 1. Đăng nhập với `admin/admin123`
 2. Vào tab "Quản lý Khách hàng"
 3. Thêm khách hàng mới:
@@ -119,9 +137,20 @@ FLUSH PRIVILEGES;
    - Password: `test123`
    - Họ tên: `Nguyen Test`
 4. Chọn khách hàng vừa tạo
-5. Nạp tiền: 50000
-6. Xem số dư đã cập nhật
-7. Thử xóa khách hàng (sẽ có xác nhận)
+5. Nạp tiền: Nhập `50000` - sẽ tự động hiển thị là `50.000`
+6. Xem số dư đã cập nhật với định dạng dấu chấm
+7. Vào tab "Quản lý Thực đơn"
+8. Thêm món mới hoặc sửa món có sẵn
+9. Thử xóa khách hàng hoặc món ăn (sẽ có xác nhận)
+
+### Thử nghiệm với Khách hàng (MỚI)
+1. Đăng nhập với `customer1/pass123`
+2. Vào tab "Chọn máy tính"
+3. Click vào máy có màu xanh (Sẵn sàng) để sử dụng
+4. Vào tab "Đặt đồ ăn"
+5. Chọn món ăn và nhập số lượng
+6. Xem số dư tự động được trừ sau khi đặt món
+7. Vào tab "Tài khoản" để xem thông tin và số dư
 
 ## Tài liệu chi tiết
 

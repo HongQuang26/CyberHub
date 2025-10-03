@@ -3,13 +3,17 @@ Simple tool for managing users and PCs in an internet cafe.
 
 ## Tính năng (Features)
 - 🔐 Đăng nhập cho Admin và Khách hàng
-- 👥 Quản lý khách hàng (thêm, xem, nạp tiền)
+- 👥 Quản lý khách hàng (thêm, xem, nạp tiền với định dạng số tiền)
 - 💻 Quản lý máy tính (xem trạng thái theo thời gian thực)
-- 💰 Quản lý số dư tài khoản
+- 🍔 **MỚI:** Quản lý thực đơn đồ ăn (thêm, sửa, xóa món ăn)
+- 🛒 **MỚI:** Đặt món ăn cho khách hàng (tự động trừ số dư)
+- 💰 Quản lý số dư tài khoản với định dạng số tiền (1.000.000 VND)
+- 🖥️ **MỚI:** Khách hàng có thể chọn và sử dụng máy tính
 - 📊 Theo dõi giao dịch
 - ✅ Validation đầu vào
 - 🔒 Hỗ trợ mã hóa mật khẩu (SHA-256)
 - 🎨 Giao diện màu sắc trực quan
+- 💵 **MỚI:** Định dạng số tiền tự động với dấu chấm phân cách (1.000.000)
 
 ## Yêu cầu hệ thống (Requirements)
 - Java Development Kit (JDK) 17 trở lên
@@ -91,11 +95,37 @@ java -cp "out;lib\mysql-connector-j-8.0.33.jar" com.yourcompany.cyberhub.Main
 Sau khi đăng nhập, bạn có thể:
 - **Tab "Quản lý Máy tính"**: Xem trạng thái các máy tính (Sẵn sàng/Đang sử dụng/Bảo trì)
 - **Tab "Quản lý Khách hàng"**: 
-  - Xem danh sách khách hàng
+  - Xem danh sách khách hàng với số dư được định dạng (ví dụ: 50.000 VND)
   - Thêm khách hàng mới
-  - Nạp tiền cho khách hàng
+  - Nạp tiền cho khách hàng (với định dạng tự động khi nhập)
+  - Xóa khách hàng
   - Làm mới danh sách
+- **Tab "Quản lý Thực đơn"** (MỚI):
+  - Xem danh sách món ăn
+  - Thêm món ăn mới (tên, giá, danh mục)
+  - Sửa thông tin món ăn (bao gồm đánh dấu có sẵn/không có sẵn)
+  - Xóa món ăn
+  - Giá được định dạng tự động với dấu chấm (ví dụ: 15.000)
 - **Tab "Lịch sử & Thống kê"**: Đang phát triển
+
+### Đăng nhập Khách hàng (MỚI)
+- Username: `customer1`, `customer2`, hoặc `customer3`
+- Password: `pass123`
+
+Sau khi đăng nhập, khách hàng có thể:
+- **Tab "Chọn máy tính"**: 
+  - Xem các máy tính có sẵn (màu xanh)
+  - Click vào máy để chọn sử dụng
+  - Máy được chọn sẽ chuyển sang trạng thái "Đang dùng"
+- **Tab "Đặt đồ ăn"**:
+  - Xem menu đồ ăn với giá được định dạng
+  - Chọn món và nhập số lượng
+  - Hệ thống tự động kiểm tra số dư
+  - Tự động trừ tiền khi đặt món thành công
+- **Tab "Tài khoản"**:
+  - Xem thông tin tài khoản
+  - Xem số dư hiện tại (được định dạng)
+  - Đăng xuất
 
 ## Cấu trúc dự án (Project Structure)
 ```
