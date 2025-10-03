@@ -1,9 +1,9 @@
-package com.yourcompany.netcafe.dao;
+package com.yourcompany.cyberhub.dao;
 
-import com.yourcompany.netcafe.model.Admin;
-import com.yourcompany.netcafe.model.Customer;
-import com.yourcompany.netcafe.model.User;
-import com.yourcompany.netcafe.util.DatabaseConnector;
+import com.yourcompany.cyberhub.model.Admin;
+import com.yourcompany.cyberhub.model.Customer;
+import com.yourcompany.cyberhub.model.User;
+import com.yourcompany.cyberhub.util.DatabaseConnector;
 
 import java.math.BigDecimal;
 import java.sql.*;

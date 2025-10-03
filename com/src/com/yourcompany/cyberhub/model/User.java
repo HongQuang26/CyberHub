@@ -1,4 +1,4 @@
-package com.yourcompany.netcafe.model;
+package com.yourcompany.cyberhub.model;
 
 public abstract class User {
     private int userId;

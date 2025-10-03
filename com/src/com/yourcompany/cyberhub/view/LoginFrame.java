@@ -1,7 +1,7 @@
-package com.yourcompany.netcafe.view;
+package com.yourcompany.cyberhub.view;
 
-import com.yourcompany.netcafe.dao.UserDao;
-import com.yourcompany.netcafe.model.User;
+import com.yourcompany.cyberhub.dao.UserDao;
+import com.yourcompany.cyberhub.model.User;
 
 import javax.swing.*;
 import java.awt.*;

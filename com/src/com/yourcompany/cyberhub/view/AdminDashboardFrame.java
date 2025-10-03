@@ -1,9 +1,9 @@
-package com.yourcompany.netcafe.view;
+package com.yourcompany.cyberhub.view;
 
-import com.yourcompany.cyberhub.src.dao.ComputerDao;
-import com.yourcompany.cyberhub.src.dao.UserDao;
-import com.yourcompany.cyberhub.src.model.Computer;
-import com.yourcompany.cyberhub.src.model.Customer;
+import com.yourcompany.cyberhub.dao.ComputerDao;
+import com.yourcompany.cyberhub.dao.UserDao;
+import com.yourcompany.cyberhub.model.Computer;
+import com.yourcompany.cyberhub.model.Customer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
