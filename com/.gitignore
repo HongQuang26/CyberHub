@@ -34,3 +34,6 @@ sources.txt
 
 ### Dependencies ###
 lib/*.jar
+
+### Configuration ###
+database.properties

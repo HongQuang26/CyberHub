@@ -89,4 +89,31 @@ public class UserDao {
             return false;
         }
     }
+
+    public boolean deleteCustomer(int userId) {
+        // Check if user is CUSTOMER role before deleting
+        String checkSql = "SELECT role FROM users WHERE user_id = ?";
+        String deleteSql = "DELETE FROM users WHERE user_id = ? AND role = 'CUSTOMER'";
+        
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            
+            checkStmt.setInt(1, userId);
+            ResultSet rs = checkStmt.executeQuery();
+            
+            if (rs.next() && "CUSTOMER".equals(rs.getString("role"))) {
+                // User is a customer, proceed with deletion
+                try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+                    deleteStmt.setInt(1, userId);
+                    int affectedRows = deleteStmt.executeUpdate();
+                    return affectedRows > 0;
+                }
+            }
+            return false; // Not a customer or doesn't exist
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

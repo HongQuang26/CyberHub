@@ -81,19 +81,27 @@ public class AdminDashboardFrame extends JFrame {
         customerPanel = new JPanel(new BorderLayout(10, 10));
         customerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Bảng hiển thị
-        customerTableModel = new DefaultTableModel(new String[]{"ID", "Tên đăng nhập", "Họ và Tên", "Số dư (VND)"}, 0);
+        // Bảng hiển thị - set to non-editable
+        customerTableModel = new DefaultTableModel(new String[]{"ID", "Tên đăng nhập", "Họ và Tên", "Số dư (VND)"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table non-editable
+            }
+        };
         customerTable = new JTable(customerTableModel);
+        customerTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         customerPanel.add(new JScrollPane(customerTable), BorderLayout.CENTER);
 
         // Panel chứa các nút chức năng
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdd = new JButton("Thêm khách hàng");
         JButton btnTopUp = new JButton("Nạp tiền");
+        JButton btnDelete = new JButton("Xóa khách hàng");
         JButton btnRefresh = new JButton("Làm mới");
 
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnTopUp);
+        buttonPanel.add(btnDelete);
         buttonPanel.add(btnRefresh);
         customerPanel.add(buttonPanel, BorderLayout.NORTH);
 
@@ -101,6 +109,7 @@ public class AdminDashboardFrame extends JFrame {
         btnRefresh.addActionListener(e -> refreshCustomerList());
         btnAdd.addActionListener(e -> showAddCustomerDialog());
         btnTopUp.addActionListener(e -> showTopUpDialog());
+        btnDelete.addActionListener(e -> showDeleteCustomerDialog());
     }
 
     private void refreshComputerStatus() {
@@ -249,6 +258,37 @@ public class AdminDashboardFrame extends JFrame {
 
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập một số hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void showDeleteCustomerDialog() {
+        int selectedRow = customerTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một khách hàng để xóa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int userId = (int) customerTableModel.getValueAt(selectedRow, 0);
+        String username = (String) customerTableModel.getValueAt(selectedRow, 1);
+        String fullName = (String) customerTableModel.getValueAt(selectedRow, 2);
+
+        int confirm = JOptionPane.showConfirmDialog(this, 
+            "Bạn có chắc chắn muốn xóa khách hàng:\n" +
+            "Tên đăng nhập: " + username + "\n" +
+            "Họ và tên: " + fullName + "\n\n" +
+            "Hành động này không thể hoàn tác!",
+            "Xác nhận xóa", 
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = userDao.deleteCustomer(userId);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                refreshCustomerList();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa khách hàng thất bại. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
