@@ -146,7 +146,7 @@ public class AdminDashboardFrame extends JFrame {
         JPanel menuManagementPanel = new JPanel(new BorderLayout(10, 10));
         menuManagementPanel.setBorder(BorderFactory.createTitledBorder("Quản lý Menu Dịch vụ"));
 
-        menuTableModel = new DefaultTableModel(new String[]{"ID", "Tên món", "Giá", "Phân loại", "Trạng thái"}, 0){
+        menuTableModel = new DefaultTableModel(new String[]{"ID", "Tên món", "Giá", "Phân loại", "Trạng thái", "Kho"}, 0){
             public boolean isCellEditable(int row, int column) { return false; }
         };
         menuTable = new JTable(menuTableModel);
@@ -300,6 +300,7 @@ public class AdminDashboardFrame extends JFrame {
             row.add(MONEY_FORMAT.format(item.getPrice()));
             row.add(item.getCategory());
             row.add(item.isAvailable() ? "Đang bán" : "Tạm ẩn");
+            row.add(item.getStorage());
             menuTableModel.addRow(row);
         }
     }
