@@ -309,13 +309,17 @@ public class AdminDashboardFrame extends JFrame {
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     JPopupMenu popupMenu = new JPopupMenu();
-                    if ("AVAILABLE".equals(computer.getStatus())) {
+                    final String currentStatus = computer.getStatus();
+
+                    if ("AVAILABLE".equals(currentStatus)) {
                         JMenuItem startItem = new JMenuItem("Mở máy cho khách...");
                         startItem.addActionListener(ae -> showStartSessionDialogWithSearch(computer));
                         popupMenu.add(startItem);
-                    } else if ("IN_USE".equals(computer.getStatus())) {
+                    } else if ("IN_USE".equals(currentStatus)) {
                         JMenuItem endItem = new JMenuItem("Tắt máy & Tính tiền");
+
                         endItem.addActionListener(ae -> showEndSessionDialog(computer));
+
                         popupMenu.add(endItem);
                         popupMenu.addSeparator();
                         JMenuItem orderItem = new JMenuItem("Gọi đồ...");
@@ -331,20 +335,45 @@ public class AdminDashboardFrame extends JFrame {
                         popupMenu.add(orderItem);
                     }
                     popupMenu.addSeparator();
-                    JMenuItem maintenanceItem = new JMenuItem("Chuyển sang chế độ Bảo trì");
-                    if ("MAINTENANCE".equals(computer.getStatus())) {
+
+                    // Sửa lỗi session
+                    JMenuItem maintenanceItem = new JMenuItem();
+
+                    if ("MAINTENANCE".equals(currentStatus)) {
                         maintenanceItem.setText("Chuyển sang chế độ Sẵn sàng");
                         maintenanceItem.addActionListener(ae -> {
                             computerDao.updateComputerStatus(computer.getComputerId(), "AVAILABLE");
                             refreshComputerStatus();
                         });
                     } else {
+                        maintenanceItem.setText("Chuyển sang chế độ Bảo trì");
                         maintenanceItem.addActionListener(ae -> {
-                            computerDao.updateComputerStatus(computer.getComputerId(), "MAINTENANCE");
-                            refreshComputerStatus();
+                            if ("IN_USE".equals(currentStatus)) {
+                                int confirm = JOptionPane.showConfirmDialog(
+                                        AdminDashboardFrame.this,
+                                        "Máy này đang được sử dụng. Bạn có muốn tắt máy và thanh toán trước khi bảo trì không?",
+                                        "Xác nhận Bảo trì",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.WARNING_MESSAGE
+                                );
+
+                                if (confirm == JOptionPane.YES_OPTION) {
+                                    boolean sessionEndedSuccessfully = showEndSessionDialog(computer);
+
+                                    if (sessionEndedSuccessfully) {
+                                        computerDao.updateComputerStatus(computer.getComputerId(), "MAINTENANCE");
+                                        refreshComputerStatus();
+                                    }
+                                }
+
+                            } else {
+                                computerDao.updateComputerStatus(computer.getComputerId(), "MAINTENANCE");
+                                refreshComputerStatus();
+                            }
                         });
                     }
                     popupMenu.add(maintenanceItem);
+
                     popupMenu.show(e.getComponent(), e.getX(), e.getY());
                 }
             }
@@ -408,35 +437,45 @@ public class AdminDashboardFrame extends JFrame {
         }
     }
 
-    private void showEndSessionDialog(Computer computer) {
+    private boolean showEndSessionDialog(Computer computer) {
         Session session = sessionDao.getActiveSessionByComputerId(computer.getComputerId());
         if (session == null) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy phiên hoạt động cho máy này.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
         Customer customer = userDao.getAllCustomers().stream().filter(c -> c.getUserId() == session.getUserId()).findFirst().orElse(null);
         if (customer == null) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin khách hàng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
+            return false;
         }
         Duration duration = Duration.between(session.getStartTime(), LocalDateTime.now());
         long secondsPlayed = duration.getSeconds();
         BigDecimal cost = HOURLY_RATE.multiply(new BigDecimal(secondsPlayed)).divide(new BigDecimal(3600), 2, BigDecimal.ROUND_HALF_UP);
         String message = String.format("<html>Khách hàng: <b>%s</b><br>Thời gian chơi: %s<br>Tổng tiền: <font color='red'>%s</font><br>Số dư hiện tại: %s</html>", session.getUsername(), formatDuration(duration), MONEY_FORMAT.format(cost), MONEY_FORMAT.format(customer.getBalance()));
         int result = JOptionPane.showConfirmDialog(this, message, "Xác nhận thanh toán cho " + computer.getComputerName(), JOptionPane.OK_CANCEL_OPTION);
+
         if (result == JOptionPane.OK_OPTION) {
             BigDecimal newBalance = customer.getBalance().subtract(cost);
             if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                 JOptionPane.showMessageDialog(this, "Số dư không đủ. Vui lòng nạp thêm tiền.", "Lỗi thanh toán", JOptionPane.ERROR_MESSAGE);
-                return;
+                return false;
             }
-            userDao.updateBalance(customer.getUserId(), newBalance);
-            sessionDao.endSession(session.getSessionId(), cost);
-            transactionDao.addTransaction(customer.getUserId(), cost, "PAYMENT");
-            computerDao.updateComputerStatus(computer.getComputerId(), "AVAILABLE");
-            JOptionPane.showMessageDialog(this, "Thanh toán thành công. Số dư mới: " + MONEY_FORMAT.format(newBalance));
-            refreshAll();
+
+            boolean balanceUpdated = userDao.updateBalance(customer.getUserId(), newBalance);
+            boolean sessionEnded = sessionDao.endSession(session.getSessionId(), cost);
+            boolean transactionLogged = transactionDao.addTransaction(customer.getUserId(), cost, "PAYMENT");
+
+            if (balanceUpdated && sessionEnded && transactionLogged) {
+                computerDao.updateComputerStatus(computer.getComputerId(), "AVAILABLE");
+                JOptionPane.showMessageDialog(this, "Thanh toán thành công. Số dư mới: " + MONEY_FORMAT.format(newBalance));
+                refreshAll();
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(this, "Lỗi nghiêm trọng khi xử lý thanh toán. Phiên CHƯA kết thúc. Vui lòng thử lại.", "Lỗi Database", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
         }
+        return false;
     }
 
     private void showAddCustomerDialog() {
