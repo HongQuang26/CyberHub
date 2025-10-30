@@ -124,6 +124,23 @@ public class OrderDialog extends JDialog {
             return;
         }
 
+        int currentInCart = 0;
+        for (int i = 0; i < cartTableModel.getRowCount(); i++) {
+            MenuItem itemInCart = (MenuItem) cartTableModel.getValueAt(i, 0);
+            if (itemInCart.getItemId() == selectedItem.getItemId()) {
+                currentInCart = (int) cartTableModel.getValueAt(i, 1);
+                break;
+            }
+        }
+
+        int totalDesired = currentInCart + quantity;
+        if (totalDesired > selectedItem.getStorage()) {
+            JOptionPane.showMessageDialog(this,
+                    "Không đủ hàng trong kho. Chỉ còn " + selectedItem.getStorage() + " sản phẩm.",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         for (int i = 0; i < cartTableModel.getRowCount(); i++) {
             MenuItem itemInCart = (MenuItem) cartTableModel.getValueAt(i, 0);
             if (itemInCart.getItemId() == selectedItem.getItemId()) {
