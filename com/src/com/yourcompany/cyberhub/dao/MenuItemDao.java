@@ -25,7 +25,8 @@ public class MenuItemDao {
                         rs.getString("name"),
                         rs.getBigDecimal("price"),
                         rs.getString("category"),
-                        rs.getBoolean("is_available")
+                        rs.getBoolean("is_available"),
+                        rs.getInt("storage")
                 ));
             }
         } catch (SQLException e) {
@@ -36,7 +37,7 @@ public class MenuItemDao {
 
     public List<MenuItem> getAllAvailableItems() {
         List<MenuItem> menuItems = new ArrayList<>();
-        String sql = "SELECT * FROM menu_items WHERE is_available = TRUE ORDER BY category, name";
+        String sql = "SELECT * FROM menu_items WHERE is_available = TRUE AND storage > 0 ORDER BY category, name";
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -47,7 +48,8 @@ public class MenuItemDao {
                         rs.getString("name"),
                         rs.getBigDecimal("price"),
                         rs.getString("category"),
-                        rs.getBoolean("is_available")
+                        rs.getBoolean("is_available"),
+                        rs.getInt("storage")
                 ));
             }
         } catch (SQLException e) {
@@ -57,13 +59,14 @@ public class MenuItemDao {
     }
 
     public boolean addMenuItem(MenuItem item) {
-        String sql = "INSERT INTO menu_items (name, price, category, is_available) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO menu_items (name, price, category, is_available, storage) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, item.getName());
             pstmt.setBigDecimal(2, item.getPrice());
             pstmt.setString(3, item.getCategory());
             pstmt.setBoolean(4, item.isAvailable());
+            pstmt.setInt(5, item.getStorage());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -72,13 +75,14 @@ public class MenuItemDao {
     }
 
     public boolean updateMenuItem(MenuItem item) {
-        String sql = "UPDATE menu_items SET name = ?, price = ?, category = ? WHERE item_id = ?";
+        String sql = "UPDATE menu_items SET name = ?, price = ?, category = ?, storage = ? WHERE item_id = ?";
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, item.getName());
             pstmt.setBigDecimal(2, item.getPrice());
             pstmt.setString(3, item.getCategory());
-            pstmt.setInt(4, item.getItemId());
+            pstmt.setInt(4, item.getStorage());
+            pstmt.setInt(5, item.getItemId());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

@@ -10,6 +10,7 @@ public class MenuItemDialog extends JDialog {
     private JTextField nameField;
     private JTextField priceField;
     private JComboBox<String> categoryComboBox;
+    private JTextField storageField;
     private boolean confirmed = false;
     private MenuItem menuItem;
 
@@ -17,7 +18,7 @@ public class MenuItemDialog extends JDialog {
         super(parent, title, true);
         this.menuItem = menuItem;
 
-        setLayout(new GridLayout(4, 2, 10, 10));
+        setLayout(new GridLayout(5, 2, 10, 10));
         setSize(400, 200);
         setLocationRelativeTo(parent);
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -25,6 +26,7 @@ public class MenuItemDialog extends JDialog {
         nameField = new JTextField();
         priceField = new JTextField();
         categoryComboBox = new JComboBox<>(new String[]{"Đồ uống", "Đồ ăn vặt", "Món chính"});
+        storageField = new JTextField("0");
 
         add(new JLabel("Tên món:"));
         add(nameField);
@@ -32,6 +34,8 @@ public class MenuItemDialog extends JDialog {
         add(priceField);
         add(new JLabel("Phân loại:"));
         add(categoryComboBox);
+        add(new JLabel("Số lượng:")); // <-- ADD THIS
+        add(storageField);
 
         JButton okButton = new JButton("Lưu");
         JButton cancelButton = new JButton("Hủy");
@@ -40,6 +44,8 @@ public class MenuItemDialog extends JDialog {
             nameField.setText(menuItem.getName());
             priceField.setText(menuItem.getPrice().toPlainString());
             categoryComboBox.setSelectedItem(menuItem.getCategory());
+            storageField.setText(String.valueOf(menuItem.getStorage()));
+            //storageField.setEditable(false);
         }
 
         okButton.addActionListener(e -> onOK());
@@ -52,8 +58,9 @@ public class MenuItemDialog extends JDialog {
     private void onOK() {
         String name = nameField.getText();
         String priceStr = priceField.getText();
+        String storageStr = storageField.getText();
 
-        if (name.isEmpty() || priceStr.isEmpty()) {
+        if (name.isEmpty() || priceStr.isEmpty() || storageStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -61,11 +68,12 @@ public class MenuItemDialog extends JDialog {
         try {
             BigDecimal price = new BigDecimal(priceStr);
             String category = (String) categoryComboBox.getSelectedItem();
+            int storage = Integer.parseInt(storageStr);
 
             if (menuItem == null) {
-                menuItem = new MenuItem(0, name, price, category, true);
+                menuItem = new MenuItem(0, name, price, category, true, storage);
             } else {
-                menuItem = new MenuItem(menuItem.getItemId(), name, price, category, menuItem.isAvailable());
+                menuItem = new MenuItem(menuItem.getItemId(), name, price, category, menuItem.isAvailable(), storage);
             }
 
             confirmed = true;

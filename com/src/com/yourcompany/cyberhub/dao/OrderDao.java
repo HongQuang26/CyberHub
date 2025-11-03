@@ -11,11 +11,26 @@ public class OrderDao {
     public boolean createOrder(Order order, List<OrderDetail> details) {
         String sqlOrder = "INSERT INTO orders (user_id, session_id, order_time, total_amount, is_paid) VALUES (?, ?, ?, ?, ?)";
         String sqlDetail = "INSERT INTO order_details (order_id, item_id, quantity, price_per_item) VALUES (?, ?, ?, ?)";
+        String sqlStockUpdate = "UPDATE menu_items SET storage = storage - ? WHERE item_id = ? AND storage >= ?";
         Connection conn = null;
 
         try {
             conn = DatabaseConnector.getConnection();
             conn.setAutoCommit(false);
+
+            try (PreparedStatement pstmtStock = conn.prepareStatement(sqlStockUpdate)) {
+                for (OrderDetail detail : details) {
+                    pstmtStock.setInt(1, detail.getQuantity());
+                    pstmtStock.setInt(2, detail.getItemId());
+                    pstmtStock.setInt(3, detail.getQuantity());
+
+                    int rowsAffected = pstmtStock.executeUpdate();
+
+                    if (rowsAffected == 0) {
+                        throw new SQLException("Not enough stock for item_id: " + detail.getItemId());
+                    }
+                }
+            }
 
             try (PreparedStatement pstmtOrder = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS)) {
                 pstmtOrder.setInt(1, order.getUserId());

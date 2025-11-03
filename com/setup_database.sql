@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS menu_items (
     name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     category ENUM('Đồ uống', 'Đồ ăn vặt', 'Món chính') NOT NULL,
-    is_available BOOLEAN DEFAULT TRUE COMMENT 'TRUE = Đang bán, FALSE = Tạm ẩn'
+    is_available BOOLEAN DEFAULT TRUE COMMENT 'TRUE = Đang bán, FALSE = Tạm ẩn',
+    storage INT NOT NULL DEFAULT 0 COMMENT 'Số lượng tồn kho'
 ) ENGINE=InnoDB COMMENT='Menu các dịch vụ, đồ ăn, thức uống của quán.';
 
 -- -----------------------------------------------------
@@ -118,12 +119,12 @@ INSERT IGNORE INTO computers (computer_name) VALUES
 ('MAY 06'), ('MAY 07'), ('MAY 08'), ('MAY 09'), ('MAY 10');
 
 -- 4. Thêm một vài món ăn mẫu vào menu
-INSERT IGNORE INTO menu_items (name, price, category) VALUES
-('Sting Dâu', 15000, 'Đồ uống'),
-('Coca-Cola', 15000, 'Đồ uống'),
-('Bim bim Oishi', 10000, 'Đồ ăn vặt'),
-('Mì Hảo Hảo trứng', 20000, 'Món chính'),
-('Nước suối', 8000, 'Đồ uống');
+INSERT IGNORE INTO menu_items (name, price, category, storage) VALUES
+('Sting Dâu', 15000, 'Đồ uống', 10),
+('Coca-Cola', 15000, 'Đồ uống', 50),
+('Bim bim Oishi', 10000, 'Đồ ăn vặt', 50),
+('Mì Hảo Hảo trứng', 20000, 'Món chính', 100),
+('Nước suối', 8000, 'Đồ uống', 50);
 
 -- =================================================================================
 -- KẾT THÚC SCRIPT
