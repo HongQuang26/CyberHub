@@ -7,7 +7,6 @@ import java.sql.SQLException;
 public class DatabaseConnector {
     private static final String MYSQL_URL = "jdbc:mysql://localhost:3306/cyberhub_management";
     private static final String MYSQL_USER = "root";
-    // !!! THAY MẬT KHẨU CỦA BẠN VÀO ĐÂY !!!
     private static final String MYSQL_PASSWORD = "root";
 
     public static Connection getConnection() throws SQLException {
